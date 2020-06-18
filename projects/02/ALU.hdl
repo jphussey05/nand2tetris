@@ -42,5 +42,24 @@ CHIP ALU {
         ng; // 1 if (out < 0),  0 otherwise
 
     PARTS:
-   // Put you code here:
+    // Use mux to select original x or all 0s
+    Mux16(a=x, b[0..15]=false, sel=zx, out=xa);
+
+    // Create a not of xa and then mux to negate or not
+    Not16(in=xa, out=notxa);
+    Mux16(a=xa, b=notxa, sel=nx, out=xfin);
+
+    // Use mux to select original y or all 0s
+    Mux16(a=y, b[0..15]=false, sel=zy, out=ya);
+
+    // Create a not of ya and then mux to negate or not
+    Not16(in=ya, out=notya);
+    Mux16(a=ya, b=notya, sel=ny, out=yfin);
+
+    Add16(a=xfin, b=yfin, out=xaddy);
+    And16(a=xfin, b=yfin, out=xandy);
+    Mux16(a=xandy, b=xaddy, sel=f, out=outa);
+
+    Not16(in=outa, out=notouta);
+    Mux16(a=outa, b=notouta, sel=no, out=out);
 }
