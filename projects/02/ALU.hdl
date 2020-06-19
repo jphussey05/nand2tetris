@@ -56,10 +56,18 @@ CHIP ALU {
     Not16(in=ya, out=notya);
     Mux16(a=ya, b=notya, sel=ny, out=yfin);
 
+    // Add and And x and y and then select with Mux
     Add16(a=xfin, b=yfin, out=xaddy);
     And16(a=xfin, b=yfin, out=xandy);
     Mux16(a=xandy, b=xaddy, sel=f, out=outa);
 
+    // Shall we not the result of add or and? 
     Not16(in=outa, out=notouta);
-    Mux16(a=outa, b=notouta, sel=no, out=out);
+    Mux16(a=outa, b=notouta, sel=no, out=out, out[0..7]=lower, out[8..15]=upper, out[15]=ng);
+
+    // Is it zero? 8-way or the lower and upper halves, NOR results
+    Or8Way(in=lower, out=low);
+    Or8Way(in=upper, out=high);
+    Or(a=low, b=high, out=prenot);
+    Not(in=prenot, out=zr);
 }
